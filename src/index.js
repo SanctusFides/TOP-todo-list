@@ -1,4 +1,4 @@
-class toDo {
+class ToDo {
 
     constructor(title, dueDate, priority, notes) {
         this.title = title;
@@ -8,6 +8,7 @@ class toDo {
 
         this.completed = false;
     }
+    // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
     // let test = new toDo('title', '1/1/01', '1', 'test notes');
 
     get title() {
@@ -54,5 +55,4 @@ class toDo {
         }
         this._priority = newPriority;
     }
-
 }
