@@ -12,9 +12,6 @@ class ToDo {
         this.completed = false;
     }
 
-    get todoTitle() {
-        return this._title;
-    }
     set title(newTitle) {
         if (newTitle === '') {
             throw 'Title field cannot be empty';
@@ -22,9 +19,6 @@ class ToDo {
         this._title = newTitle;
     }
 
-    get dueDate() {
-        return this._dueDate;
-    }
     set dueDate(newDate) {
         if (newDate === '') {
             throw 'Date field cannot be empty';
@@ -32,9 +26,6 @@ class ToDo {
         this._dueDate = newDate;
     }
 
-    get notes() {
-        return this._notes;
-    }
     set notes(newNotes) {
         if (newNotes === '') {
             throw 'Date field cannot be empty';
@@ -42,10 +33,6 @@ class ToDo {
         this._notes = newNotes;
     }
 
-    // PRIORITY DATA STRUCTURE HAS YET TO BE DETERMINED - might by nums or might be handled by project manager obj
-    get priority() {
-        return this._priority;
-    }
     set priority(newPriority) {
         if (newPriority === '') {
             throw 'Priority field cannot be empty';
@@ -64,9 +51,6 @@ class Project {
         this.toDoList = [];
     }
 
-    get title() {
-        return this._title;
-    }
     set title(newTitle) {
         if (newTitle === '') {
             throw 'Title field cannot be empty';
@@ -81,9 +65,15 @@ class Project {
         this.toDoList.push(todo);
     }
 
-
     removeToDo(todo) {
+        if (todo === undefined){
+            throw 'Must include a to-do to remove';
+        }
         this.toDoList.splice(this.toDoList.indexOf(todo),1);
+    }
+
+    clearAllToDo() {
+        this.toDoList = [];
     }
 
     printList(){
@@ -92,8 +82,12 @@ class Project {
         // });
         console.log(this.toDoList);
     }
-    
 }
+
+// class Manager {
+    
+//     constructor
+// }
 
 // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
     let test1 = new ToDo('test1', '1/1/01', '1', 'test notes');
@@ -104,9 +98,30 @@ class Project {
     testProj.addToDo(test1);
     testProj.addToDo(test2);
     testProj.addToDo(test3);
-    testProj.removeToDo(test2);
-    testProj.removeToDo(test1);
-    testProj.printList();
+
+    // console.log(test1);
+
+    // Testing all setters - last tested 6/30 - all green
+    // test1.title = 'new title'
+    // test1.dueDate = 'Today';
+    // test1.priority = 4;
+    // test1.notes = 'Updated notes';
+    // test1.completed = true;
+    
+    // Testing Project obj functions
+    // testProj.removeToDo(test2);
+    // testProj.clearAllToDo();
+    // testProj.printList();    
+
+    // testProj.title = 'New Name'
+    // testProj.description = 'new notes!'
+    
+
+
+
+    // console.log(testProj.title);
+    // console.log(testProj.description);
+
 
     
     
