@@ -7,9 +7,10 @@ import { format, compareDesc, parseISO } from 'date-fns'
 class ToDo {
     constructor(title, dueDate, priority, notes) {
         this.title = title;
-        if (!(dueDate instanceof Date)) {
-            throw new Error('Not a valid date!');
-        }
+        // commenting this line out because I have no implemented dates yet
+        // if (!(dueDate instanceof Date)) {
+        //     throw new Error('Not a valid date!');
+        // }
         this.dueDate = dueDate;
         this.priority = priority;
         this.notes = notes;
