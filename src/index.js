@@ -110,6 +110,33 @@ class Manager {
     }
 }
 
+// Function grabs all the buttons and adds the event listener to each
+function loadButtons() {
+    let projectbuttons = document.getElementsByClassName('proj-button');
+    for (let i=0; i < projectbuttons.length; i++) {
+        const button = projectbuttons[i];
+        button.addEventListener('click', function(){load(button.id)});
+    }
+}
+loadButtons();
+
+// Grabbing the General button in projects and setting it to the initial loaded project
+let preselectedGeneral = document.getElementById('general');
+load(preselectedGeneral.id);
+
+// Function is used to load the info based on the id for the button
+function load(id) {
+    let oldSelection = document.querySelector('.proj-button-active');
+    if (oldSelection) {
+        oldSelection.className = 'proj-button';
+    }
+    console.log(id);
+    let button = document.getElementById(id);
+    if (button) {
+        button.className = 'proj-button-active';
+    }
+}
+
 // TESTING CLASS IS JUST CREATED SO I CAN COLLAPSE ALL THE LOG TESTING LINES
 class Testing {
     // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
