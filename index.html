@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,27 +10,53 @@
     <script src="https://kit.fontawesome.com/4c536a6bd5.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../src/style.css">
 </head>
+
 <body>
-    <div class="content">
-        <div class="header" id="header">
-            <h1>To(p)-Do</h1>
-        </div>
 
-        <div class="mid">
-            <div class="mid-left" id="midLeft">
-                
+    <div class="header" id="header">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <title>list-box-outline</title>
+            <path
+                d="M11 15H17V17H11V15M9 7H7V9H9V7M11 13H17V11H11V13M11 9H17V7H11V9M9 11H7V13H9V11M21 5V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H19C20.1 3 21 3.9 21 5M19 5H5V19H19V5M9 15H7V17H9V15Z" />
+        </svg>
+        <a>To(p)-Do</a>
+    </div>
+
+    <div class="mid">
+
+        <div class="mid-left" id="midLeft">
+
+            <div class="proj-container">
+                <a>Projects</a>
+                <div class="projects" id="projects">
+                    <button class="proj-button" id="general" onlick="load()">General</button>
+                    <button class="proj-button" id="test" onlick="load()">Test</button>
+                </div>
             </div>
-            <div class="mid-right" id="midRight"></div>
+            <div class="add-proj-container">
+                <button class="add-proj-button" id="addProj"><svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24">
+                        <title>plus</title>
+                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                    </svg> Add Project</button>
+            </div>
+
         </div>
 
-        <div class="footer" id="footer">
-            <p>
-                Copyright © 2023 SanctusFides
-            </p>
-            <a href="https://github.com/SanctusFides" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
+
+        <div class="mid-right" id="midRight">
+
         </div>
     </div>
+
+    <div class="footer" id="footer">
+        <p>
+            Copyright © 2023 SanctusFides
+        </p>
+        <a href="https://github.com/SanctusFides" target="_blank">
+            <i class="fab fa-github"></i>
+        </a>
+    </div>
 </body>
+
 </html>
