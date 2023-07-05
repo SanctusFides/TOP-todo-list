@@ -128,27 +128,6 @@ class Manager {
 // THIS IS THE MAIN HONCHO MANAGER - this is the object that is built and loaded into on initial page load
 let managerObj = new Manager();
 
-// Function grabs all the buttons and adds the event listener to each
-function loadButtons() {
-    let projectbuttons = document.getElementsByClassName('proj-button');
-    for (let i = 0; i < projectbuttons.length; i++) {
-        const button = projectbuttons[i];
-        button.addEventListener('click', function () { load(button.id) });
-    }
-}
-loadButtons();
-
-// Grabbing the General button in projects and setting it to the initial loaded project
-let preselectedGeneral = document.getElementById('general');
-load(preselectedGeneral.id);
-// Function is used to load the info based on the id for the button and changes class name for css
-function load(id) {
-    let oldSelection = document.querySelector('.proj-button-active');
-    if (oldSelection) {oldSelection.className = 'proj-button';}
-    let button = document.getElementById(id);
-    if (button) {button.className = 'proj-button-active';}
-}
-
 // General Creation was the old test function that has been refactored into the constructor of our General project tab
 // This is used to provide the app with a project with 3 sample to-do's. Manager object is created with 'General' in the 
 // array which is what is looked at to populate the tabs.
@@ -182,17 +161,43 @@ function generalCreation() {
     // console.log(testObj);
 }
 
-generalCreation();
-
+// Selecting the project body to interact with
 const projectBody = document.getElementById('rightContainer');
-loadProject('General');
+
+function load(id) {
+    // First 4 lines handle the class name logic - used to set the active element's proj button to be darkened 
+    let oldSelection = document.querySelector('.proj-button-active');
+    if (oldSelection) {oldSelection.className = 'proj-button';}
+    let button = document.getElementById(id);
+    if (button) {button.className = 'proj-button-active';}
+    // After the class names are examined, it will then run the loadProject function which will load the data
+    loadProject('General');
+}
+
 function loadProject(id) {
     projectBody.textContent = '';
     let projectObj = managerObj.getProject(id);
     projectBody.textContent = projectObj.title +' ' + projectObj.description;
-    // projectBody.append(projectObj);
 }
 
+// Function grabs all the buttons and adds the event listener to each
+function loadButtons() {
+    let projectbuttons = document.getElementsByClassName('proj-button');
+    for (let i = 0; i < managerObj.projectList.length; i++) {
+        const button = projectbuttons[i];
+        button.addEventListener('click', function () { load(button.id) });
+        console.log('mic check');
+    }
+}
+
+// Creating 1 function at the end to run the init functions so everything has a chance to instantiate before calling
+function appBoot() {
+    generalCreation()
+    loadButtons();
+    // Setting the app to init with the General project from the manager
+    load(managerObj.getProject('General').title.toLowerCase());
+}
+appBoot();
 
 // COME BACK TO DATE TESTING - not worth focusing on now until I get to implementing the date selector on front
 // let testDates = [format(new Date(2014, 1, 1), 'yyyy-dd-MM'), format(new Date(2014, 10, 1), 'yyyy-dd-MM'), format(new Date(2014, 11, 1), 'yyyy-dd-MM')];
