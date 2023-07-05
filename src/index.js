@@ -180,13 +180,18 @@ function loadProject(id) {
     projectBody.textContent = projectObj.title +' ' + projectObj.description;
 }
 
-// Function grabs all the buttons and adds the event listener to each
+// Loops through manager object's project list and creates the buttons for all the projects in the manager obj's array
 function loadButtons() {
-    let projectbuttons = document.getElementsByClassName('proj-button');
+    let projectList = document.getElementById('projects');
     for (let i = 0; i < managerObj.projectList.length; i++) {
-        const button = projectbuttons[i];
-        button.addEventListener('click', function () { load(button.id) });
         console.log('mic check');
+        const projButton = document.createElement('button');
+        let projObj = managerObj.projectList[i];
+        projButton.textContent = projObj.title;
+        projButton.className = 'proj-button';
+        projButton.id = projObj.title;
+        projButton.addEventListener('click', function () { load(projButton.id) });
+        projectList.appendChild(projButton);
     }
 }
 
@@ -195,7 +200,7 @@ function appBoot() {
     generalCreation()
     loadButtons();
     // Setting the app to init with the General project from the manager
-    load(managerObj.getProject('General').title.toLowerCase());
+    load(managerObj.getProject('General').title);
 }
 appBoot();
 
