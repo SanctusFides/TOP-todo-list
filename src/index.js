@@ -45,7 +45,6 @@ class ToDo {
         }
         this._priority = newPriority;
     }
-
 }
 
 class Project {
@@ -63,6 +62,9 @@ class Project {
         }
         this._title = newTitle;
     }
+    get title() {
+        return this._title;
+    }
 
     addToDo(todo) {
         if (!(todo instanceof ToDo)) {
@@ -72,17 +74,17 @@ class Project {
     }
 
     removeToDo(todo) {
-        if (todo === undefined){
+        if (todo === undefined) {
             throw 'Must include a to-do to remove';
         }
-        this.toDoList.splice(this.toDoList.indexOf(todo),1);
+        this.toDoList.splice(this.toDoList.indexOf(todo), 1);
     }
 
     clearAllToDo() {
         this.toDoList = [];
     }
 
-    printList(){
+    printList() {
         // this.toDoList.forEach((todo) => {
         //     console.log(todo);
         // });
@@ -91,32 +93,47 @@ class Project {
 }
 
 class Manager {
-    
+
     constructor() {
-        this.projects = [];
+        this.projectList = [];
     }
 
     addProject(project) {
         if (!(project instanceof Project)) {
             throw 'Not a Project!';
         }
-        this.projects.push(project);
+        this.projectList.push(project);
     }
 
-    printProjects(){
+    deleteProject(project) {
+        this.projectList.splice(this.projectList.indexOf(project), 1);
+    }
+
+    printProjects() {
         // this.toDoList.forEach((todo) => {
         //     console.log(todo);
         // });
-        console.log(this.projects);
+        console.log(this.projectList);
+    }
+
+    getProject(name) {
+        for (let i = 0; i < this.projectList.length; i++) {
+                if(this.projectList[i].title === name){
+                    return this.projectList[i];
+                };
+        };
     }
 }
+
+// THIS IS THE MAIN HONCHO MANAGER - this is the object that is built and loaded into on initial page load
+let managerObj = new Manager();
 
 // Function grabs all the buttons and adds the event listener to each
 function loadButtons() {
     let projectbuttons = document.getElementsByClassName('proj-button');
-    for (let i=0; i < projectbuttons.length; i++) {
+    for (let i = 0; i < projectbuttons.length; i++) {
         const button = projectbuttons[i];
-        button.addEventListener('click', function(){load(button.id)});
+        button.addEventListener('click', function () { load(button.id) });
     }
 }
 loadButtons();
@@ -124,55 +141,58 @@ loadButtons();
 // Grabbing the General button in projects and setting it to the initial loaded project
 let preselectedGeneral = document.getElementById('general');
 load(preselectedGeneral.id);
-
-// Function is used to load the info based on the id for the button
+// Function is used to load the info based on the id for the button and changes class name for css
 function load(id) {
     let oldSelection = document.querySelector('.proj-button-active');
-    if (oldSelection) {
-        oldSelection.className = 'proj-button';
-    }
-    console.log(id);
+    if (oldSelection) {oldSelection.className = 'proj-button';}
     let button = document.getElementById(id);
-    if (button) {
-        button.className = 'proj-button-active';
-    }
+    if (button) {button.className = 'proj-button-active';}
 }
 
-// TESTING CLASS IS JUST CREATED SO I CAN COLLAPSE ALL THE LOG TESTING LINES
-class Testing {
+// General Creation was the old test function that has been refactored into the constructor of our General project tab
+// This is used to provide the app with a project with 3 sample to-do's. Manager object is created with 'General' in the 
+// array which is what is looked at to populate the tabs.
+function generalCreation() {
     // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
-        // let test1 = new ToDo('test1', '1/1/01', '1', 'test notes');
-        // let test2 = new ToDo('test2', '2/1/01', '2', 'test notes');
-        // let test3 = new ToDo('test3', '3/1/01', '3', 'test notes');
+    let test1 = new ToDo('Dishes', '1/1/01', '1', 'do dishes');
+    let test2 = new ToDo('Laundry', '2/1/01', '2', 'do laundry');
+    let test3 = new ToDo('Trash', '3/1/01', '3', 'takeout trash');
+
+    const generalProj = new Project('General', 'general todo list');
+    generalProj.addToDo(test1);
+    generalProj.addToDo(test2);
+    generalProj.addToDo(test3);
+
+    // Test proj will be removed afterwards. This is only to have a second data set instantiated
+    const testProj = new Project('Test', 'general todo list');
+    testProj.addToDo(test1);
+    testProj.addToDo(test2);
+    testProj.addToDo(test3);
+
+    // TEST MANAGER IS NOT NEEDED ANY LONGER - regular manager that lives global takes care of this - WILL REMOVE TOMORROW
+    const testMng = new Manager();
+    testMng.addProject(generalProj);
     
-        // const testProj = new Project('testProj', 'for testing purposes');
-        // testProj.addToDo(test1);
-        // testProj.addToDo(test2);
-        // testProj.addToDo(test3);
-    
-        // const testMng = new Manager();
-        // testMng.addProject(testProj);
-        // testMng.printProjects();
-    
-        // console.log(test1);
-    
-        // test1.title = 'new title'
-        // test1.dueDate = 'Today';
-        // test1.priority = 4;
-        // test1.notes = 'Updated notes';
-        // test1.completed = true;
-        
-        // Testing Project obj functions
-        // testProj.removeToDo(test2);
-        // testProj.clearAllToDo();z
-        // testProj.printList();    
-    
-        // testProj.title = 'New Name'
-        // testProj.description = 'new notes!'
-        
-        // console.log(testProj.title);
-        // console.log(testProj.description);
+    managerObj.addProject(generalProj);
+    managerObj.addProject(testProj);
+
+    // This is just for testing, not apart of General's instantiation
+    managerObj.printProjects();
+    // const testObj = managerObj.getProject('Test');
+    // console.log(testObj);
 }
+
+generalCreation();
+
+const projectBody = document.getElementById('rightContainer');
+loadProject('General');
+function loadProject(id) {
+    projectBody.textContent = '';
+    let projectObj = managerObj.getProject(id);
+    projectBody.textContent = projectObj.title +' ' + projectObj.description;
+    // projectBody.append(projectObj);
+}
+
 
 // COME BACK TO DATE TESTING - not worth focusing on now until I get to implementing the date selector on front
 // let testDates = [format(new Date(2014, 1, 1), 'yyyy-dd-MM'), format(new Date(2014, 10, 1), 'yyyy-dd-MM'), format(new Date(2014, 11, 1), 'yyyy-dd-MM')];
@@ -200,6 +220,6 @@ class Testing {
 
 // console.log(test1);
 
-    
+
 
 
