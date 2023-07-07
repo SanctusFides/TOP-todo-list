@@ -110,17 +110,14 @@ class Manager {
     }
 
     printProjects() {
-        // this.toDoList.forEach((todo) => {
-        //     console.log(todo);
-        // });
         console.log(this.projectList);
     }
 
     getProject(name) {
         for (let i = 0; i < this.projectList.length; i++) {
-                if(this.projectList[i].title === name){
-                    return this.projectList[i];
-                };
+            if (this.projectList[i].title === name) {
+                return this.projectList[i];
+            };
         };
     }
 }
@@ -133,25 +130,28 @@ let managerObj = new Manager();
 // array which is what is looked at to populate the tabs.
 function generalCreation() {
     // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
-    let test1 = new ToDo('Dishes', '1/1/01', '1', 'do dishes');
-    let test2 = new ToDo('Laundry', '2/1/01', '2', 'do laundry');
-    let test3 = new ToDo('Trash', '3/1/01', '3', 'takeout trash');
+    let todo1 = new ToDo('Dishes', '1/1/01', '1', 'do dishes');
+    let todo2 = new ToDo('Laundry', '2/1/01', '2', 'do laundry');
+    let todo3 = new ToDo('Trash', '3/1/01', '3', 'takeout trash');
 
     const generalProj = new Project('General', 'general todo list');
-    generalProj.addToDo(test1);
-    generalProj.addToDo(test2);
-    generalProj.addToDo(test3);
+    generalProj.addToDo(todo1);
+    generalProj.addToDo(todo2);
+    generalProj.addToDo(todo3);
 
     // Test proj will be removed afterwards. This is only to have a second data set instantiated
-    const testProj = new Project('Test', 'general todo list');
+    const testProj = new Project('Test', 'and I helped!');
+    let test1 = new ToDo('TEST', '1/1/01', '1', 'do dishes');
+    let test2 = new ToDo('Testing', '2/1/01', '2', 'do laundry');
+    let test3 = new ToDo('test', '3/1/01', '3', 'takeout trash');
     testProj.addToDo(test1);
     testProj.addToDo(test2);
     testProj.addToDo(test3);
 
-    // TEST MANAGER IS NOT NEEDED ANY LONGER - regular manager that lives global takes care of this - WILL REMOVE TOMORROW
+    // TEST MANAGER IS NOT NEEDED ANY LONGER - regular manager that lives global takes care of this - WILL REMOVE WHEN DONE
     const testMng = new Manager();
     testMng.addProject(generalProj);
-    
+
     managerObj.addProject(generalProj);
     managerObj.addProject(testProj);
 
@@ -162,29 +162,84 @@ function generalCreation() {
 }
 
 // Selecting the project body to interact with
-const projectBody = document.getElementById('rightContainer');
+let projectBody = document.getElementById('rightContainer');
 
 function load(id) {
     // First 4 lines handle the class name logic - used to set the active element's proj button to be darkened 
     let oldSelection = document.querySelector('.proj-button-active');
-    if (oldSelection) {oldSelection.className = 'proj-button';}
+    if (oldSelection) { oldSelection.className = 'proj-button'; }
     let button = document.getElementById(id);
-    if (button) {button.className = 'proj-button-active';}
+    if (button) { button.className = 'proj-button-active'; }
     // After the class names are examined, it will then run the loadProject function which will load the data
-    loadProject('General');
+    loadProject(id);
 }
 
+// LOAD PROJECT IS THE BULK OF THE LOGIC - this is where the to-do list panel is built
 function loadProject(id) {
-    projectBody.textContent = '';
-    let projectObj = managerObj.getProject(id);
-    projectBody.textContent = projectObj.title +' ' + projectObj.description;
+    // The remove is first run to clear the page from the general project data and then rebuild it with the new data
+    projectBody.remove();
+    // setting the new div to contain the id and class of the original
+    const newBody = document.createElement('div');
+    newBody.id = 'rightContainer';
+    newBody.className = 'right-container';
+    document.getElementById('midRight').appendChild(newBody);
+    
+    // Creating a div in which project data is loaded into, this is fed into the above container - this is the one that will actually house the projects data
+    const projectDiv = document.createElement('div');
+    projectDiv.className = 'project-div';
+    projectDiv.id = 'projectDiv';
+    newBody.appendChild(projectDiv);
+
+    // Line below reaches into the manager and pulls out the object to extrapolate data
+    const projectObj = managerObj.getProject(id);
+
+    // Creating header info to display the title and description of the project
+    const headerDiv = document.createElement('div');
+    const headerSpan = document.createElement('span');
+    headerDiv.className='header-div';
+    headerSpan.className='header-span';
+    // Setting the header text values for name and description of project to go at top of panel
+    const headerH1 = document.createElement('h1');
+    headerH1.className='header1';
+    headerH1.textContent = projectObj.title;
+    headerSpan.appendChild(headerH1);
+    const headerH3 = document.createElement('h3');
+    headerH3.className='header3';
+    headerH3.textContent = projectObj.description;
+    headerSpan.appendChild(headerH3);
+
+    headerDiv.appendChild(headerSpan);
+    newBody.appendChild(headerDiv);
+
+    // This for loop goes through the actual project's to-do list and builds that info onto the page
+    for (let i = 0; i < projectObj.toDoList.length; i++) {
+        // Creating a P tag to insert a span that will contain the info - span for formatting inline
+        const elementLine = document.createElement('p');
+        const elementSpan = document.createElement('span');
+        projectDiv.appendChild(elementLine);
+        elementLine.appendChild(elementSpan);
+
+        // console.log(projectObj.toDoList[i]);
+        const toDoObj = projectObj.toDoList[i];
+        const title = toDoObj._title;
+        const priority = toDoObj._priority;
+        const dueDate = toDoObj._dueDate;
+        const notes = toDoObj._notes;
+
+        elementSpan.textContent = `${priority} ${title} ${dueDate} ${notes}`;
+    }
+
+    // This line below is essential for setting the global projectBody variable to this new value.
+    // This is needed to retain the object after it is removed at the start of loadProject. It is null otherwise, this reloads it
+    projectBody = newBody;
 }
 
 // Loops through manager object's project list and creates the buttons for all the projects in the manager obj's array
+// This change is much better, as now we can run this again when a new project is added
 function loadButtons() {
     let projectList = document.getElementById('projects');
     for (let i = 0; i < managerObj.projectList.length; i++) {
-        console.log('mic check');
+        // console.log('mic check');
         const projButton = document.createElement('button');
         let projObj = managerObj.projectList[i];
         projButton.textContent = projObj.title;
