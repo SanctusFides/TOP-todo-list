@@ -102,13 +102,39 @@ body {
     color: white;
 }
 
-
+/* These stylings below are for the todo elements */
 .project-div > p {
+    display: flex;
+    gap: 1rem;
     width: 80%;
     padding: 1rem;
-    border: solid black 1px;
+    border: solid darkgrey 1px;
+    border-radius: 8px;
 }
 
+.todo-button{
+    margin-right: 0;
+}
+
+.edit-button{
+    justify-content: flex-end;
+    border: none;
+    padding: .7rem;
+    border-radius: 8px;
+    background-color: rgb(63, 126, 232);
+    color: white;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.delete-button{
+    border: none;
+    padding: .7rem;
+    border-radius: 8px;
+    background-color: rgb(213, 45, 40);
+    color: white;
+    font-weight: 600;
+}
 
 
 /* FOR THE SVG ON THE ADD PROJECT BUTTON */

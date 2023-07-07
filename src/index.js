@@ -45,6 +45,10 @@ class ToDo {
         }
         this._priority = newPriority;
     }
+
+    set completed(status) {
+        this._completed = status;
+    }
 }
 
 class Project {
@@ -66,6 +70,13 @@ class Project {
         return this._title;
     }
 
+    set toDoList(newList) {
+        this._toDoList = newList;
+    }
+    get toDoList() {
+        return this._toDoList;
+    }
+
     addToDo(todo) {
         if (!(todo instanceof ToDo)) {
             throw 'Not a to-do!';
@@ -73,11 +84,48 @@ class Project {
         this.toDoList.push(todo);
     }
 
-    removeToDo(todo) {
-        if (todo === undefined) {
-            throw 'Must include a to-do to remove';
+    removeToDo(id) {
+        console.log(id);
+        for (let i = 0; i < this.toDoList.length; i++) {
+            if (this.toDoList[i]._title === id) {
+                console.log('click');
+                this.toDoList.splice(i, 1);
+            }
         }
-        this.toDoList.splice(this.toDoList.indexOf(todo), 1);
+        this.printList();
+    }
+
+    getToDo(name) {
+        for (let i = 0; i < this.toDoList.length; i++) {
+            if (this.toDoList[i]._title === name) {
+                return this.toDoList[i];
+            }
+        }
+    }
+
+    // Sorts the todo list by priority
+    sortToDos() {
+        console.log(this.toDoList);
+        let newList = [];
+        for (let i = 0; i < this.toDoList.length; i++) {
+            if (this.toDoList[i]._priority === 'High') {
+                newList.push(this.toDoList[i]);
+                console.log(`pushing ${this.toDoList[i].title}`);
+            }
+            if (this.toDoList[i]._priority === 'Medium') {
+                newList.push(this.toDoList[i]);
+                console.log(`pushing ${this.toDoList[i].title}`);
+
+            }
+            if (this.toDoList[i]._priority === 'Low') {
+                newList.push(this.toDoList[i]);
+                console.log(`pushing ${this.toDoList[i].title}`);
+
+            }
+        }
+        console.log(newList);
+
+        this.toDoList = newList;
     }
 
     clearAllToDo() {
@@ -130,9 +178,9 @@ let managerObj = new Manager();
 // array which is what is looked at to populate the tabs.
 function generalCreation() {
     // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
-    let todo1 = new ToDo('Dishes', '1/1/01', '1', 'do dishes');
-    let todo2 = new ToDo('Laundry', '2/1/01', '2', 'do laundry');
-    let todo3 = new ToDo('Trash', '3/1/01', '3', 'takeout trash');
+    let todo1 = new ToDo('Dishes', '1/1/01', 'Medium', 'do dishes');
+    let todo2 = new ToDo('Laundry', '2/1/01', 'Low', 'do laundry');
+    let todo3 = new ToDo('Trash', '3/1/01', 'High', 'takeout trash');
 
     const generalProj = new Project('General', 'general todo list');
     generalProj.addToDo(todo1);
@@ -141,9 +189,9 @@ function generalCreation() {
 
     // Test proj will be removed afterwards. This is only to have a second data set instantiated
     const testProj = new Project('Test', 'and I helped!');
-    let test1 = new ToDo('TEST', '1/1/01', '1', 'do dishes');
-    let test2 = new ToDo('Testing', '2/1/01', '2', 'do laundry');
-    let test3 = new ToDo('test', '3/1/01', '3', 'takeout trash');
+    let test1 = new ToDo('TEST', '1/1/01', 'Medium', 'test Med');
+    let test2 = new ToDo('Testing', '2/1/01', 'Low', 'test Low');
+    let test3 = new ToDo('test', '3/1/01', 'High', 'test High');
     testProj.addToDo(test1);
     testProj.addToDo(test2);
     testProj.addToDo(test3);
@@ -183,7 +231,7 @@ function loadProject(id) {
     newBody.id = 'rightContainer';
     newBody.className = 'right-container';
     document.getElementById('midRight').appendChild(newBody);
-    
+
     // Creating a div in which project data is loaded into, this is fed into the above container - this is the one that will actually house the projects data
     const projectDiv = document.createElement('div');
     projectDiv.className = 'project-div';
@@ -196,42 +244,94 @@ function loadProject(id) {
     // Creating header info to display the title and description of the project
     const headerDiv = document.createElement('div');
     const headerSpan = document.createElement('span');
-    headerDiv.className='header-div';
-    headerSpan.className='header-span';
+    headerDiv.className = 'header-div';
+    headerSpan.className = 'header-span';
     // Setting the header text values for name and description of project to go at top of panel
     const headerH1 = document.createElement('h1');
-    headerH1.className='header1';
+    headerH1.className = 'header1';
     headerH1.textContent = projectObj.title;
     headerSpan.appendChild(headerH1);
     const headerH3 = document.createElement('h3');
-    headerH3.className='header3';
+    headerH3.className = 'header3';
     headerH3.textContent = projectObj.description;
     headerSpan.appendChild(headerH3);
 
     headerDiv.appendChild(headerSpan);
     newBody.appendChild(headerDiv);
 
-    // This for loop goes through the actual project's to-do list and builds that info onto the page
-    for (let i = 0; i < projectObj.toDoList.length; i++) {
-        // Creating a P tag to insert a span that will contain the info - span for formatting inline
-        const elementLine = document.createElement('p');
-        const elementSpan = document.createElement('span');
-        projectDiv.appendChild(elementLine);
-        elementLine.appendChild(elementSpan);
-
-        // console.log(projectObj.toDoList[i]);
-        const toDoObj = projectObj.toDoList[i];
-        const title = toDoObj._title;
-        const priority = toDoObj._priority;
-        const dueDate = toDoObj._dueDate;
-        const notes = toDoObj._notes;
-
-        elementSpan.textContent = `${priority} ${title} ${dueDate} ${notes}`;
-    }
+    loadToDos(id);
 
     // This line below is essential for setting the global projectBody variable to this new value.
     // This is needed to retain the object after it is removed at the start of loadProject. It is null otherwise, this reloads it
     projectBody = newBody;
+}
+
+// The logic block for looping through the project and constructing the to-do elements on the page
+function loadToDos(id) {
+    const projectObj = managerObj.getProject(id);
+
+
+
+    projectObj.sortToDos();
+
+
+
+    // This for loop goes through the actual project's to-do list and builds that info onto the page
+    for (let i = 0; i < projectObj.toDoList.length; i++) {
+        // Creating a P tag to contain spans that will contain the info - this element houses border/spacing styles
+        const elementLine = document.createElement('p');
+        projectDiv.appendChild(elementLine);
+
+        // Constructs the individual spans that combine together-this allows each span to have a class name for styling
+        const prioritySpan = document.createElement('span');
+        elementLine.appendChild(prioritySpan);
+        const titleSpan = document.createElement('span');
+        elementLine.appendChild(titleSpan);
+        const dueDatetSpan = document.createElement('span');
+        elementLine.appendChild(dueDatetSpan);
+        const notesSpan = document.createElement('span');
+        elementLine.appendChild(notesSpan);
+        const statusSpan = document.createElement('span');
+        elementLine.appendChild(statusSpan);
+
+        // console.log(projectObj.toDoList[i]);
+        const toDoObj = projectObj.toDoList[i];
+        const priority = toDoObj._priority;
+        const title = toDoObj._title;
+        const dueDate = toDoObj._dueDate;
+        const notes = toDoObj._notes;
+        const status = toDoObj._completed;
+
+        prioritySpan.textContent = priority;
+        titleSpan.textContent = title;
+        dueDatetSpan.textContent = dueDate;
+        notesSpan.textContent = notes;
+        statusSpan.textContent = status;
+
+        // Creating the edit and delete buttons, adding listener functions and adding to end of span
+        const editButton = document.createElement('button');
+        editButton.textContent = 'EDIT';
+        editButton.classList='edit-button todo-button';
+        editButton.id = 'editButton';
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'DELETE';
+        deleteButton.classList='delete-button todo-button';
+        deleteButton.id = 'deleteButton';
+        
+        // editButton.addEventListener('click', function () { projectObj.removeToDo(title) });
+        deleteButton.addEventListener('click', function () { deleteToDo(id,title) });
+
+        elementLine.appendChild(editButton);
+        elementLine.appendChild(deleteButton);
+    }
+}
+
+// Takes in a id to grab the correct project and a title for the todo that needs to be deleted, delets and refreshes 
+// the panel to reflect the updated list
+function deleteToDo(id, title) {
+    const projectObj = managerObj.getProject(id);
+    projectObj.removeToDo(title);
+    loadProject(id);
 }
 
 // Loops through manager object's project list and creates the buttons for all the projects in the manager obj's array
