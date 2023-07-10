@@ -1,5 +1,3 @@
-import { format, compareDesc, parseISO } from 'date-fns'
-
 // This app is to create a to do list. This will be made of 3 parts, the project manager, the project and the to do objects
 // Each individual to do will only contain info about the 1 task, the project will store a list of to dos and the project 
 // manager will store and maintain the projects
@@ -24,6 +22,9 @@ class ToDo {
         }
         this._title = newTitle;
     }
+    get title() {
+        return this._title;
+    }
 
     set dueDate(newDate) {
         if (newDate === '') {
@@ -38,12 +39,18 @@ class ToDo {
         }
         this._notes = newNotes;
     }
+    get notes() {
+        return this._notes;
+    }
 
     set priority(newPriority) {
         if (newPriority === '') {
             throw 'Priority field cannot be empty';
         }
         this._priority = newPriority;
+    }
+    get priority() {
+        return this._priority;
     }
 
     set completed(status) {
@@ -92,7 +99,7 @@ class Project {
                 this.toDoList.splice(i, 1);
             }
         }
-        this.printList();
+        // this.printList();
     }
 
     getToDo(name) {
@@ -103,27 +110,36 @@ class Project {
         }
     }
 
-    // Sorts the todo list by priority
+    // Sorts the todo list by priority - this is not a clean method but it works    
     sortToDos() {
-        console.log(this.toDoList);
+        // console.log(this.toDoList);
         let newList = [];
+        let highList = [];
+        let medList = [];
+        let lowList = [];
+
         for (let i = 0; i < this.toDoList.length; i++) {
             if (this.toDoList[i]._priority === 'High') {
-                newList.push(this.toDoList[i]);
-                console.log(`pushing ${this.toDoList[i].title}`);
+                highList.push(this.toDoList[i]);
             }
             if (this.toDoList[i]._priority === 'Medium') {
-                newList.push(this.toDoList[i]);
-                console.log(`pushing ${this.toDoList[i].title}`);
+                medList.push(this.toDoList[i]);
 
             }
             if (this.toDoList[i]._priority === 'Low') {
-                newList.push(this.toDoList[i]);
-                console.log(`pushing ${this.toDoList[i].title}`);
-
+                lowList.push(this.toDoList[i]);
             }
         }
-        console.log(newList);
+
+        for (let i = 0; i < highList.length; i++) {
+            newList.push(highList[i]);
+        }
+        for (let i = 0; i < medList.length; i++) {
+            newList.push(medList[i]);
+        }
+        for (let i = 0; i < lowList.length; i++) {
+            newList.push(lowList[i]);
+        }
 
         this.toDoList = newList;
     }
@@ -178,11 +194,11 @@ let managerObj = new Manager();
 // array which is what is looked at to populate the tabs.
 function generalCreation() {
     // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
-    let todo1 = new ToDo('Dishes', '1/1/01', 'Medium', 'do dishes');
-    let todo2 = new ToDo('Laundry', '2/1/01', 'Low', 'do laundry');
-    let todo3 = new ToDo('Trash', '3/1/01', 'High', 'takeout trash');
+    let todo1 = new ToDo('Dishes', '1/1/01', 'Medium', 'Do dishes');
+    let todo2 = new ToDo('Laundry', '2/1/01', 'Low', 'Do laundry');
+    let todo3 = new ToDo('Trash', '3/1/01', 'High', 'Takeout trash');
 
-    const generalProj = new Project('General', 'general todo list');
+    const generalProj = new Project('General', 'General tasks and chores');
     generalProj.addToDo(todo1);
     generalProj.addToDo(todo2);
     generalProj.addToDo(todo3);
@@ -204,7 +220,7 @@ function generalCreation() {
     managerObj.addProject(testProj);
 
     // This is just for testing, not apart of General's instantiation
-    managerObj.printProjects();
+    // managerObj.printProjects();
     // const testObj = managerObj.getProject('Test');
     // console.log(testObj);
 }
@@ -267,13 +283,16 @@ function loadProject(id) {
 }
 
 // The logic block for looping through the project and constructing the to-do elements on the page
+// ALL DATE RELATED ASPECTS HAVE BEEN COMMENTED OUT
 function loadToDos(id) {
     const projectObj = managerObj.getProject(id);
-
-
-
+    projectObj.getProject
+    // Runs this at the start to order the list in priority of high to low
     projectObj.sortToDos();
 
+    // This clears the div of any previous data loaded - this is needed for fresh list after editing a todo in saveToDoEdit
+    let projectDiv = document.getElementById('projectDiv');
+    projectDiv.textContent = '';
 
 
     // This for loop goes through the actual project's to-do list and builds that info onto the page
@@ -285,41 +304,56 @@ function loadToDos(id) {
         // Constructs the individual spans that combine together-this allows each span to have a class name for styling
         const prioritySpan = document.createElement('span');
         elementLine.appendChild(prioritySpan);
+
         const titleSpan = document.createElement('span');
         elementLine.appendChild(titleSpan);
         const dueDatetSpan = document.createElement('span');
         elementLine.appendChild(dueDatetSpan);
         const notesSpan = document.createElement('span');
         elementLine.appendChild(notesSpan);
-        const statusSpan = document.createElement('span');
-        elementLine.appendChild(statusSpan);
+        // const statusSpan = document.createElement('span');
+        // elementLine.appendChild(statusSpan);
 
-        // console.log(projectObj.toDoList[i]);
         const toDoObj = projectObj.toDoList[i];
         const priority = toDoObj._priority;
         const title = toDoObj._title;
-        const dueDate = toDoObj._dueDate;
+        // const dueDate = toDoObj._dueDate;
         const notes = toDoObj._notes;
-        const status = toDoObj._completed;
+        // const status = toDoObj._completed;
 
-        prioritySpan.textContent = priority;
+        // This is used to set the class for CSS to apply the correct colored dot to indicate priority
+        if (priority === 'High') {
+            prioritySpan.className = 'priority-high';
+        } else if (priority === 'Medium') {
+            prioritySpan.className = 'priority-med';
+        } else {
+            prioritySpan.className = 'priority-low';
+        }
+
+        prioritySpan.textContent = '   ';
         titleSpan.textContent = title;
-        dueDatetSpan.textContent = dueDate;
-        notesSpan.textContent = notes;
-        statusSpan.textContent = status;
+        // dueDatetSpan.textContent = dueDate;
+        if (notes.length >= 30) {
+            let shortenedNotes = notes.slice(1,29);
+            shortenedNotes = `${shortenedNotes}...`;
+            notesSpan.textContent = shortenedNotes; 
+        } else {
+            notesSpan.textContent = notes;
+        }
+        // statusSpan.textContent = status;
 
         // Creating the edit and delete buttons, adding listener functions and adding to end of span
         const editButton = document.createElement('button');
         editButton.textContent = 'EDIT';
-        editButton.classList='edit-button todo-button';
+        editButton.classList = 'edit-button todo-button';
         editButton.id = 'editButton';
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'DELETE';
-        deleteButton.classList='delete-button todo-button';
+        deleteButton.classList = 'delete-button todo-button';
         deleteButton.id = 'deleteButton';
-        
-        // editButton.addEventListener('click', function () { projectObj.removeToDo(title) });
-        deleteButton.addEventListener('click', function () { deleteToDo(id,title) });
+
+        editButton.addEventListener('click', function () { editToDo(id, title) });
+        deleteButton.addEventListener('click', function () { deleteToDo(id, title) });
 
         elementLine.appendChild(editButton);
         elementLine.appendChild(deleteButton);
@@ -332,6 +366,113 @@ function deleteToDo(id, title) {
     const projectObj = managerObj.getProject(id);
     projectObj.removeToDo(title);
     loadProject(id);
+}
+
+// Loads the editing window and elements for an edit
+function editToDo(id, title) {
+
+    // WIPES THE WINDOW OF ANY PREVIOUS EDITS
+    let todoContent = document.querySelector('.todo-data');
+    todoContent.textContent = '';
+
+    const h2 = document.createElement('h2');
+    h2.textContent = 'Edit To-Do';
+    todoContent.appendChild(h2);
+
+    // Loading the project into memory to fetch the to do object
+    const projectObj = managerObj.getProject(id);
+    const toDoObj = projectObj.getToDo(title);
+    
+    // THIS IS THE MODAL LOGIC THAT WAS FOUND AT W3 SCHOOLS
+    var modal = document.getElementById("editModal");
+    modal.style.display = "block";
+    var span = document.getElementsByClassName("close")[0];
+    // When the user clicks the button, open the modal 
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', function () {
+        modal.style.display = "none";
+    })
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    const nameDiv = document.createElement('div');
+    let nameField = document.createElement("input");
+    nameField.type='text';
+    nameField.id = 'nameField';
+    nameField.value = toDoObj.title;
+    const nameLabel = document.createElement('label');
+    nameLabel.setAttribute('for', nameField.id);
+    nameLabel.innerHTML ='Name';
+    nameDiv.appendChild(nameLabel);
+    nameDiv.appendChild(nameField);
+    nameDiv.className='edit-name';
+
+    const priorityDiv = document.createElement('div');
+    let priorityField = document.createElement("select");
+    priorityField.id = 'priorityField';
+    const priorityLabel = document.createElement('label');
+    priorityLabel.setAttribute('for', priorityField.id);
+    priorityLabel.innerHTML ='Priority';
+    priorityDiv.appendChild(priorityLabel);
+    priorityDiv.appendChild(priorityField);
+    priorityDiv.className='edit-priority';
+    // Loops through and creates the priority list then at the end sets the loaded value to the same as the object
+    var priorityArray = ['High','Medium','Low'];
+    for (let i = 0; i < priorityArray.length; i++) {
+        var option = document.createElement('option');
+        option.value = priorityArray[i];
+        option.text = priorityArray[i];
+        priorityField.appendChild(option);
+    }
+    priorityField.value = toDoObj.priority;
+
+    const notesDiv = document.createElement('div');
+    let notesField = document.createElement("textarea");
+    notesField.id = 'notesField';
+    notesField.rows = 5;
+    notesField.className = 'notes-field';
+    notesField.value = toDoObj.notes;
+    const notesLabel = document.createElement('label');
+    notesLabel.setAttribute('for', notesField.id);
+    notesLabel.innerHTML ='Notes';
+    notesDiv.appendChild(notesLabel);
+    notesDiv.appendChild(notesField);
+    notesDiv.className='edit-notes';
+
+    todoContent.appendChild(nameDiv);
+    todoContent.appendChild(priorityDiv);
+    todoContent.appendChild(notesDiv);
+
+    // Create the save button at the end to pass data into saveToDoEdit function
+    const saveEditBtn = document.createElement('button');
+    saveEditBtn.textContent = 'Save';
+    saveEditBtn.className = 'save-button';
+    saveEditBtn.addEventListener('click', function () { saveToDoEdit(id, title, nameField.value, priorityField.value, notesField.value) });
+    todoContent.appendChild(saveEditBtn)
+}
+
+// Handles the saving of the edit for a todo that was done in editToDo
+function saveToDoEdit(id, title, nameField, priorityField, notesField){
+    // Takes in the project object for rerunning sort after saving the todo
+    const projectObj = managerObj.getProject(id);
+    // fetches this object from the stored array
+    const toDoObj = projectObj.getToDo(title);
+    // saves the new values to the todo
+    toDoObj.title = nameField;
+    toDoObj.priority = priorityField;
+    toDoObj.notes = notesField;
+
+    // this changes the modals style to none so that it closes
+    document.getElementById('editModal').style.display ='none';
+    projectObj.sortToDos();
+    loadToDos(id);
+}
+
+function addProject() {
+    console.log('sup dog');
 }
 
 // Loops through manager object's project list and creates the buttons for all the projects in the manager obj's array
@@ -347,6 +488,7 @@ function loadButtons() {
         projButton.id = projObj.title;
         projButton.addEventListener('click', function () { load(projButton.id) });
         projectList.appendChild(projButton);
+
     }
 }
 
@@ -356,35 +498,9 @@ function appBoot() {
     loadButtons();
     // Setting the app to init with the General project from the manager
     load(managerObj.getProject('General').title);
+    // adds event listener for add project button to call the addProject function
+    let addProjectBtn = document.getElementById('addProj');
+    addProjectBtn.addEventListener('click', function () { addProject() });
 }
+
 appBoot();
-
-// COME BACK TO DATE TESTING - not worth focusing on now until I get to implementing the date selector on front
-// let testDates = [format(new Date(2014, 1, 1), 'yyyy-dd-MM'), format(new Date(2014, 10, 1), 'yyyy-dd-MM'), format(new Date(2014, 11, 1), 'yyyy-dd-MM')];
-// let parsedDates = [];
-// testDates.forEach(e => {
-//     parsedDates.push(parseISO(e));
-// })
-// console.log(parsedDates.sort(compareDesc));
-// let sortedTest = testDates.sort(compareDesc);
-
-
-
-// let test1 = new ToDo('test1', testDate, '1', 'test notes');
-// let test2 = new ToDo('test2', testDate, '2', 'test notes');
-// let test3 = new ToDo('test3', testDate, '3', 'test notes');
-
-// const testProj = new Project('testProj', 'for testing purposes');
-// testProj.addToDo(test1);
-// testProj.addToDo(test2);
-// testProj.addToDo(test3);
-
-// const testMng = new Manager();
-// testMng.addProject(testProj);
-// testMng.printProjects();
-
-// console.log(test1);
-
-
-
-
