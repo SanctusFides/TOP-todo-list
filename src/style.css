@@ -61,6 +61,25 @@ body {
     grid-column: 1 / 3;
 }
 
+/* This is for the div containing the add todo button on the project list page in the header */
+.add-todo-div {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 3rem;
+    align-items: center;
+    grid-row: 1;
+    grid-column: 2;
+}
+
+.add-todo-btn {
+    border: none;
+    font-size: 1.4rem;
+    padding: .7rem;
+    border-radius: 8px;
+    background-color: rgb(51, 51, 51);
+    color: white;
+}
+
 .project-div {
     grid-row: 2 / span 3;
     grid-column: 2;
@@ -196,7 +215,6 @@ body {
 /* MODAL SETTINGS - received these from W3 Schools website and customized for personal needs */
 .modal {
     display: none;
-    /* Hidden by default */
     position: fixed;
     z-index: 1;
     padding-top: 100px;
@@ -220,19 +238,28 @@ body {
     height: 55%;
 }
 
-.todo-data {
+.project-modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 35%;
+    height: 40%;
+}
+.todo-data, .project-data {
     display: flex;
     flex-direction: column;
     height: 80%;
     width: 80%;
-    gap: 3rem;
+    gap: 2.5rem;
     padding: 2rem;
     font-size: 1rem;
 }
 
 .edit-name,
 .edit-priority,
-.edit-notes {
+.notes {
     display: flex;
     flex-direction: column;
 }
@@ -249,9 +276,10 @@ body {
     font-size: 1rem;
 }
 
-.edit-notes>textarea {
+#notesField {
     font-size: .8rem;
     padding: .7rem;
+    width: 100%;
 }
 
 .save-button {

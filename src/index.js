@@ -3,17 +3,10 @@
 // manager will store and maintain the projects
 
 class ToDo {
-    constructor(title, dueDate, priority, notes) {
+    constructor(title, priority, notes) {
         this.title = title;
-        // commenting this line out because I have no implemented dates yet
-        // if (!(dueDate instanceof Date)) {
-        //     throw new Error('Not a valid date!');
-        // }
-        this.dueDate = dueDate;
         this.priority = priority;
         this.notes = notes;
-
-        this.completed = false;
     }
 
     set title(newTitle) {
@@ -24,13 +17,6 @@ class ToDo {
     }
     get title() {
         return this._title;
-    }
-
-    set dueDate(newDate) {
-        if (newDate === '') {
-            throw 'Date field cannot be empty';
-        }
-        this._dueDate = newDate;
     }
 
     set notes(newNotes) {
@@ -51,10 +37,6 @@ class ToDo {
     }
     get priority() {
         return this._priority;
-    }
-
-    set completed(status) {
-        this._completed = status;
     }
 }
 
@@ -194,9 +176,9 @@ let managerObj = new Manager();
 // array which is what is looked at to populate the tabs.
 function generalCreation() {
     // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
-    let todo1 = new ToDo('Dishes', '1/1/01', 'Medium', 'Do dishes');
-    let todo2 = new ToDo('Laundry', '2/1/01', 'Low', 'Do laundry');
-    let todo3 = new ToDo('Trash', '3/1/01', 'High', 'Takeout trash');
+    let todo1 = new ToDo('Dishes', 'Medium', 'Do dishes');
+    let todo2 = new ToDo('Laundry', 'Low', 'Do laundry');
+    let todo3 = new ToDo('Trash', 'High', 'Takeout trash');
 
     const generalProj = new Project('General', 'General tasks and chores');
     generalProj.addToDo(todo1);
@@ -205,9 +187,9 @@ function generalCreation() {
 
     // Test proj will be removed afterwards. This is only to have a second data set instantiated
     const testProj = new Project('Test', 'and I helped!');
-    let test1 = new ToDo('TEST', '1/1/01', 'Medium', 'test Med');
-    let test2 = new ToDo('Testing', '2/1/01', 'Low', 'test Low');
-    let test3 = new ToDo('test', '3/1/01', 'High', 'test High');
+    let test1 = new ToDo('TEST', 'Medium', 'test Med');
+    let test2 = new ToDo('Testing','Low', 'test Low');
+    let test3 = new ToDo('test', 'High', 'test High');
     testProj.addToDo(test1);
     testProj.addToDo(test2);
     testProj.addToDo(test3);
@@ -220,9 +202,9 @@ function generalCreation() {
     managerObj.addProject(testProj);
 
     // This is just for testing, not apart of General's instantiation
-    // managerObj.printProjects();
+    managerObj.printProjects();
     // const testObj = managerObj.getProject('Test');
-    // console.log(testObj);
+    // console.log(generalProj);
 }
 
 // Selecting the project body to interact with
@@ -271,9 +253,19 @@ function loadProject(id) {
     headerH3.className = 'header3';
     headerH3.textContent = projectObj.description;
     headerSpan.appendChild(headerH3);
-
     headerDiv.appendChild(headerSpan);
+    
+    // Creating the 'Add ToDo' button
+    const buttonDiv = document.createElement('div');
+    buttonDiv.className = 'add-todo-div';
+    const addToDoBtn = document.createElement('button');
+    addToDoBtn.className = 'add-todo-btn';
+    addToDoBtn.innerHTML = 'Add ToDo';
+    addToDoBtn.addEventListener('click', function () { addToDo() });
+    buttonDiv.appendChild(addToDoBtn);
+
     newBody.appendChild(headerDiv);
+    newBody.appendChild(buttonDiv);
 
     loadToDos(id);
 
@@ -334,9 +326,9 @@ function loadToDos(id) {
         titleSpan.textContent = title;
         // dueDatetSpan.textContent = dueDate;
         if (notes.length >= 30) {
-            let shortenedNotes = notes.slice(1,29);
+            let shortenedNotes = notes.slice(1, 29);
             shortenedNotes = `${shortenedNotes}...`;
-            notesSpan.textContent = shortenedNotes; 
+            notesSpan.textContent = shortenedNotes;
         } else {
             notesSpan.textContent = notes;
         }
@@ -382,7 +374,7 @@ function editToDo(id, title) {
     // Loading the project into memory to fetch the to do object
     const projectObj = managerObj.getProject(id);
     const toDoObj = projectObj.getToDo(title);
-    
+
     // THIS IS THE MODAL LOGIC THAT WAS FOUND AT W3 SCHOOLS
     var modal = document.getElementById("editModal");
     modal.style.display = "block";
@@ -400,27 +392,27 @@ function editToDo(id, title) {
     }
     const nameDiv = document.createElement('div');
     let nameField = document.createElement("input");
-    nameField.type='text';
+    nameField.type = 'text';
     nameField.id = 'nameField';
     nameField.value = toDoObj.title;
     const nameLabel = document.createElement('label');
     nameLabel.setAttribute('for', nameField.id);
-    nameLabel.innerHTML ='Name';
+    nameLabel.innerHTML = 'Name';
     nameDiv.appendChild(nameLabel);
     nameDiv.appendChild(nameField);
-    nameDiv.className='edit-name';
+    nameDiv.className = 'edit-name';
 
     const priorityDiv = document.createElement('div');
     let priorityField = document.createElement("select");
     priorityField.id = 'priorityField';
     const priorityLabel = document.createElement('label');
     priorityLabel.setAttribute('for', priorityField.id);
-    priorityLabel.innerHTML ='Priority';
+    priorityLabel.innerHTML = 'Priority';
     priorityDiv.appendChild(priorityLabel);
     priorityDiv.appendChild(priorityField);
-    priorityDiv.className='edit-priority';
+    priorityDiv.className = 'edit-priority';
     // Loops through and creates the priority list then at the end sets the loaded value to the same as the object
-    var priorityArray = ['High','Medium','Low'];
+    var priorityArray = ['High', 'Medium', 'Low'];
     for (let i = 0; i < priorityArray.length; i++) {
         var option = document.createElement('option');
         option.value = priorityArray[i];
@@ -433,14 +425,14 @@ function editToDo(id, title) {
     let notesField = document.createElement("textarea");
     notesField.id = 'notesField';
     notesField.rows = 5;
-    notesField.className = 'notes-field';
+    notesField.className = 'notes';
     notesField.value = toDoObj.notes;
     const notesLabel = document.createElement('label');
     notesLabel.setAttribute('for', notesField.id);
-    notesLabel.innerHTML ='Notes';
+    notesLabel.innerHTML = 'Notes';
     notesDiv.appendChild(notesLabel);
     notesDiv.appendChild(notesField);
-    notesDiv.className='edit-notes';
+    notesDiv.className = 'edit-notes';
 
     todoContent.appendChild(nameDiv);
     todoContent.appendChild(priorityDiv);
@@ -455,7 +447,7 @@ function editToDo(id, title) {
 }
 
 // Handles the saving of the edit for a todo that was done in editToDo
-function saveToDoEdit(id, title, nameField, priorityField, notesField){
+function saveToDoEdit(id, title, nameField, priorityField, notesField) {
     // Takes in the project object for rerunning sort after saving the todo
     const projectObj = managerObj.getProject(id);
     // fetches this object from the stored array
@@ -466,24 +458,99 @@ function saveToDoEdit(id, title, nameField, priorityField, notesField){
     toDoObj.notes = notesField;
 
     // this changes the modals style to none so that it closes
-    document.getElementById('editModal').style.display ='none';
+    document.getElementById('editModal').style.display = 'none';
     projectObj.sortToDos();
     loadToDos(id);
 }
 
+function addToDo(){
+    console.log('ayoo');
+}
+
+// Loads the modal and builds the body of elements for user to enter in the new project
 function addProject() {
     console.log('sup dog');
+    // WIPES THE WINDOW OF ANY PREVIOUS EDITS
+    let projectContent = document.querySelector('.project-data');
+    projectContent.textContent = '';
+
+    const h2 = document.createElement('h2');
+    h2.textContent = 'Add New Project';
+    projectContent.appendChild(h2);
+
+
+    // THIS IS THE MODAL LOGIC THAT WAS FOUND AT W3 SCHOOLS
+    var modal = document.getElementById("addModal");
+    modal.style.display = "block";
+    var span = document.getElementsByClassName("close")[0];
+    // When the user clicks the button, open the modal 
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', function () {
+        modal.style.display = "none";
+    })
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    const nameDiv = document.createElement('div');
+    let nameField = document.createElement("input");
+    nameField.type = 'text';
+    nameField.id = 'nameField';
+    const nameLabel = document.createElement('label');
+    nameLabel.setAttribute('for', nameField.id);
+    nameLabel.innerHTML = 'Name';
+    nameDiv.appendChild(nameLabel);
+    nameDiv.appendChild(nameField);
+    nameDiv.className = 'edit-name';
+
+
+    const descriptionDiv = document.createElement('div');
+    let descriptionText = document.createElement("textarea");
+    descriptionText.rows = 3;
+    descriptionText.className = 'notes';
+    const descriptionLabel = document.createElement('label');
+    descriptionLabel.setAttribute('for', descriptionText.id);
+    descriptionLabel.innerHTML = 'Description of Project';
+    descriptionDiv.appendChild(descriptionLabel);
+    descriptionDiv.appendChild(descriptionText);
+    descriptionDiv.className = 'notes';
+
+    projectContent.appendChild(nameDiv);
+    projectContent.appendChild(descriptionDiv);
+
+    // Create the save button at the end to pass data into saveToDoEdit function
+    const saveEditBtn = document.createElement('button');
+    saveEditBtn.textContent = 'Save';
+    saveEditBtn.className = 'save-button';
+    saveEditBtn.addEventListener('click', function () { saveNewProject(nameField.value, descriptionText.value) });
+    projectContent.appendChild(saveEditBtn)
+}
+// Handles actually saving the new project and repopulating the projects list to update
+function saveNewProject(name, description) {
+    const newProj = new Project(name, description);
+    managerObj.addProject(newProj);
+    document.getElementById('addModal').style.display = 'none';
+    loadButtons();
 }
 
 // Loops through manager object's project list and creates the buttons for all the projects in the manager obj's array
 // This change is much better, as now we can run this again when a new project is added
 function loadButtons() {
     let projectList = document.getElementById('projects');
+    projectList.textContent = '';
     for (let i = 0; i < managerObj.projectList.length; i++) {
         // console.log('mic check');
         const projButton = document.createElement('button');
         let projObj = managerObj.projectList[i];
-        projButton.textContent = projObj.title;
+        if (projObj.title.length >= 9) {
+            const shortTitle = projObj.title.slice(1,9)
+            projButton.textContent = `${shortTitle}...`;
+        } else {
+            projButton.textContent = projObj.title;
+        }
         projButton.className = 'proj-button';
         projButton.id = projObj.title;
         projButton.addEventListener('click', function () { load(projButton.id) });
