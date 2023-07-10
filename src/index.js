@@ -260,8 +260,8 @@ function loadProject(id) {
     buttonDiv.className = 'add-todo-div';
     const addToDoBtn = document.createElement('button');
     addToDoBtn.className = 'add-todo-btn';
-    addToDoBtn.innerHTML = 'Add ToDo';
-    addToDoBtn.addEventListener('click', function () { addToDo() });
+    addToDoBtn.innerHTML = 'Add To Do';
+    addToDoBtn.addEventListener('click', function () { addToDo(id) });
     buttonDiv.appendChild(addToDoBtn);
 
     newBody.appendChild(headerDiv);
@@ -463,8 +463,93 @@ function saveToDoEdit(id, title, nameField, priorityField, notesField) {
     loadToDos(id);
 }
 
-function addToDo(){
-    console.log('ayoo');
+function addToDo(id){
+    // WIPES THE WINDOW OF ANY PREVIOUS EDITS
+    let todoContent = document.querySelector('.todo-data');
+    todoContent.textContent = '';
+
+    const h2 = document.createElement('h2');
+    h2.textContent = 'Add New To-Do';
+    todoContent.appendChild(h2);
+
+    // THIS IS THE MODAL LOGIC THAT WAS FOUND AT W3 SCHOOLS
+    var modal = document.getElementById("editModal");
+    modal.style.display = "block";
+    var span = document.getElementsByClassName("close")[0];
+    // When the user clicks the button, open the modal 
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', function () {
+        modal.style.display = "none";
+    })
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    const nameDiv = document.createElement('div');
+    let nameField = document.createElement("input");
+    nameField.type = 'text';
+    nameField.id = 'nameField';
+    const nameLabel = document.createElement('label');
+    nameLabel.setAttribute('for', nameField.id);
+    nameLabel.innerHTML = 'Name';
+    nameDiv.appendChild(nameLabel);
+    nameDiv.appendChild(nameField);
+    nameDiv.className = 'edit-name';
+
+    const priorityDiv = document.createElement('div');
+    let priorityField = document.createElement("select");
+    priorityField.id = 'priorityField';
+    const priorityLabel = document.createElement('label');
+    priorityLabel.setAttribute('for', priorityField.id);
+    priorityLabel.innerHTML = 'Priority';
+    priorityDiv.appendChild(priorityLabel);
+    priorityDiv.appendChild(priorityField);
+    priorityDiv.className = 'edit-priority';
+    // Loops through and creates the priority list then at the end sets the loaded value to the same as the object
+    var priorityArray = ['High', 'Medium', 'Low'];
+    for (let i = 0; i < priorityArray.length; i++) {
+        var option = document.createElement('option');
+        option.value = priorityArray[i];
+        option.text = priorityArray[i];
+        priorityField.appendChild(option);
+    }
+
+    const notesDiv = document.createElement('div');
+    let notesField = document.createElement("textarea");
+    notesField.id = 'notesField';
+    notesField.rows = 5;
+    notesField.className = 'notes';
+    const notesLabel = document.createElement('label');
+    notesLabel.setAttribute('for', notesField.id);
+    notesLabel.innerHTML = 'Notes';
+    notesDiv.appendChild(notesLabel);
+    notesDiv.appendChild(notesField);
+    notesDiv.className = 'edit-notes';
+
+    todoContent.appendChild(nameDiv);
+    todoContent.appendChild(priorityDiv);
+    todoContent.appendChild(notesDiv);
+
+    // Create the save button at the end to pass data into saveToDoEdit function
+    const saveEditBtn = document.createElement('button');
+    saveEditBtn.textContent = 'Save';
+    saveEditBtn.className = 'save-button';
+    saveEditBtn.addEventListener('click', function () { saveNewToDo(id, nameField.value, priorityField.value, notesField.value) });
+    todoContent.appendChild(saveEditBtn)
+}
+
+function saveNewToDo(id, name, priority, notes) {
+
+    const newToDo = new ToDo(name, priority, notes);
+    const projectObj = managerObj.getProject(id);
+    projectObj.addToDo(newToDo);
+
+    // this changes the modals style to none so that it closes
+    document.getElementById('editModal').style.display = 'none';
+    projectObj.sortToDos();
+    loadToDos(id);
 }
 
 // Loads the modal and builds the body of elements for user to enter in the new project
