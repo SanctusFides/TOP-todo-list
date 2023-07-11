@@ -41,7 +41,6 @@ class ToDo {
 }
 
 class Project {
-
     constructor(title, description) {
         this.title = title;
         this.description = description;
@@ -59,6 +58,13 @@ class Project {
         return this._title;
     }
 
+    set description(newDescription) {
+        this._description = newDescription;
+    }
+    get description() {
+        return this._description;
+    }
+
     set toDoList(newList) {
         this._toDoList = newList;
     }
@@ -74,14 +80,11 @@ class Project {
     }
 
     removeToDo(id) {
-        console.log(id);
         for (let i = 0; i < this.toDoList.length; i++) {
             if (this.toDoList[i]._title === id) {
-                console.log('click');
                 this.toDoList.splice(i, 1);
             }
         }
-        // this.printList();
     }
 
     getToDo(name) {
@@ -94,7 +97,6 @@ class Project {
 
     // Sorts the todo list by priority - this is not a clean method but it works    
     sortToDos() {
-        // console.log(this.toDoList);
         let newList = [];
         let highList = [];
         let medList = [];
@@ -131,15 +133,11 @@ class Project {
     }
 
     printList() {
-        // this.toDoList.forEach((todo) => {
-        //     console.log(todo);
-        // });
         console.log(this.toDoList);
     }
 }
 
 class Manager {
-
     constructor() {
         this.projectList = [];
     }
@@ -166,15 +164,64 @@ class Manager {
             };
         };
     }
+
+    get projectList() {
+        return this._projectList;
+    }
+    set projectList(newList) {
+        this._projectList = newList;
+    }
 }
 
-// THIS IS THE MAIN HONCHO MANAGER - this is the object that is built and loaded into on initial page load
-let managerObj = new Manager();
+// THIS IS THE MAIN-BRAIN MANAGER - this is the variable that's setup to be global across all functions
+let managerObj;
+
+// Turned this into a function so that I can init Manager where ever needed - currently run in bootloader
+function createManager() {
+    managerObj = new Manager();
+}
+
+function retrieveStorage() {
+    // Checks if there is a stored manager - if so extrapolates the data and forms objects and sets them on the manager
+    if (localStorage.getItem('storedManager')) {
+        let deserializedManager = JSON.parse(localStorage.getItem('storedManager'));
+        // makes a new list to store the fully built projects that are created while looping through json
+        let newProjectList = [];
+        for (let i = 0; i < deserializedManager._projectList.length; i++) {
+            let projectData =deserializedManager._projectList[i];
+
+            // creates a new to-do list for the project by looping through them in the json
+            let newToDoList = []
+            for (let j = 0; j < projectData._toDoList.length; j++) {
+                let toDoData = projectData._toDoList[j];
+                let newToDo = new ToDo(toDoData._title, toDoData._priority, toDoData._notes);
+                newToDoList.push(newToDo);
+            }
+            // Once the to-dos are built, it assembles the project object, attaches the new todo list and pushes them to the new project list
+            let newProject = new Project(projectData._title, projectData._description,);
+            newProject._toDoList = newToDoList;
+            newProjectList.push(newProject);
+        }
+        // once it finishes looping through the json, it sets the manager's project list to contain the saved data
+        managerObj._projectList = newProjectList;
+    } else {
+        // this runs if there is no saved data to load from, it will just init it with the basic general project
+        localStorage.setItem('storedManager', JSON.stringify(managerObj.projectList));
+        generalCreation();
+    }
+}
+
+function updateStorage() {
+    if (localStorage.getItem('storedManager')) {
+        localStorage.setItem('storedManager', JSON.stringify(managerObj))
+    }
+}
 
 // General Creation was the old test function that has been refactored into the constructor of our General project tab
 // This is used to provide the app with a project with 3 sample to-do's. Manager object is created with 'General' in the 
 // array which is what is looked at to populate the tabs.
 function generalCreation() {
+
     // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
     let todo1 = new ToDo('Dishes', 'Medium', 'Do dishes');
     let todo2 = new ToDo('Laundry', 'Low', 'Do laundry');
@@ -188,7 +235,7 @@ function generalCreation() {
     // Test proj will be removed afterwards. This is only to have a second data set instantiated
     const testProj = new Project('Test', 'and I helped!');
     let test1 = new ToDo('TEST', 'Medium', 'test Med');
-    let test2 = new ToDo('Testing','Low', 'test Low');
+    let test2 = new ToDo('Testing', 'Low', 'test Low');
     let test3 = new ToDo('test', 'High', 'test High');
     testProj.addToDo(test1);
     testProj.addToDo(test2);
@@ -201,10 +248,7 @@ function generalCreation() {
     managerObj.addProject(generalProj);
     managerObj.addProject(testProj);
 
-    // This is just for testing, not apart of General's instantiation
-    managerObj.printProjects();
-    // const testObj = managerObj.getProject('Test');
-    // console.log(generalProj);
+    updateStorage();
 }
 
 // Selecting the project body to interact with
@@ -254,7 +298,7 @@ function loadProject(id) {
     headerH3.textContent = projectObj.description;
     headerSpan.appendChild(headerH3);
     headerDiv.appendChild(headerSpan);
-    
+
     // Creating the 'Add ToDo' button
     const buttonDiv = document.createElement('div');
     buttonDiv.className = 'add-todo-div';
@@ -275,7 +319,6 @@ function loadProject(id) {
 }
 
 // The logic block for looping through the project and constructing the to-do elements on the page
-// ALL DATE RELATED ASPECTS HAVE BEEN COMMENTED OUT
 function loadToDos(id) {
     const projectObj = managerObj.getProject(id);
     projectObj.getProject
@@ -303,15 +346,12 @@ function loadToDos(id) {
         elementLine.appendChild(dueDatetSpan);
         const notesSpan = document.createElement('span');
         elementLine.appendChild(notesSpan);
-        // const statusSpan = document.createElement('span');
-        // elementLine.appendChild(statusSpan);
+
 
         const toDoObj = projectObj.toDoList[i];
         const priority = toDoObj._priority;
         const title = toDoObj._title;
-        // const dueDate = toDoObj._dueDate;
         const notes = toDoObj._notes;
-        // const status = toDoObj._completed;
 
         // This is used to set the class for CSS to apply the correct colored dot to indicate priority
         if (priority === 'High') {
@@ -324,7 +364,6 @@ function loadToDos(id) {
 
         prioritySpan.textContent = '   ';
         titleSpan.textContent = title;
-        // dueDatetSpan.textContent = dueDate;
         if (notes.length >= 30) {
             let shortenedNotes = notes.slice(1, 29);
             shortenedNotes = `${shortenedNotes}...`;
@@ -332,7 +371,6 @@ function loadToDos(id) {
         } else {
             notesSpan.textContent = notes;
         }
-        // statusSpan.textContent = status;
 
         // Creating the edit and delete buttons, adding listener functions and adding to end of span
         const editButton = document.createElement('button');
@@ -352,15 +390,15 @@ function loadToDos(id) {
     }
 }
 
-// Takes in a id to grab the correct project and a title for the todo that needs to be deleted, delets and refreshes 
-// the panel to reflect the updated list
+// Takes in a id to grab the correct project and a title for the todo that needs to be deleted, delets and refreshes the panel to reflect the updated list
 function deleteToDo(id, title) {
     const projectObj = managerObj.getProject(id);
     projectObj.removeToDo(title);
+    updateStorage();
     loadProject(id);
 }
 
-// Loads the editing window and elements for an edit
+// Builds the editing modal and elements within it
 function editToDo(id, title) {
 
     // WIPES THE WINDOW OF ANY PREVIOUS EDITS
@@ -461,9 +499,11 @@ function saveToDoEdit(id, title, nameField, priorityField, notesField) {
     document.getElementById('editModal').style.display = 'none';
     projectObj.sortToDos();
     loadToDos(id);
+    updateStorage()
 }
 
-function addToDo(id){
+// Builds the add modal and elements within it
+function addToDo(id) {
     // WIPES THE WINDOW OF ANY PREVIOUS EDITS
     let todoContent = document.querySelector('.todo-data');
     todoContent.textContent = '';
@@ -540,21 +580,20 @@ function addToDo(id){
     todoContent.appendChild(saveEditBtn)
 }
 
+// Handles saving the new To Do to its project
 function saveNewToDo(id, name, priority, notes) {
-
     const newToDo = new ToDo(name, priority, notes);
     const projectObj = managerObj.getProject(id);
     projectObj.addToDo(newToDo);
-
     // this changes the modals style to none so that it closes
     document.getElementById('editModal').style.display = 'none';
     projectObj.sortToDos();
     loadToDos(id);
+    updateStorage()
 }
 
 // Loads the modal and builds the body of elements for user to enter in the new project
 function addProject() {
-    console.log('sup dog');
     // WIPES THE WINDOW OF ANY PREVIOUS EDITS
     let projectContent = document.querySelector('.project-data');
     projectContent.textContent = '';
@@ -619,19 +658,18 @@ function saveNewProject(name, description) {
     managerObj.addProject(newProj);
     document.getElementById('addModal').style.display = 'none';
     loadButtons();
+    updateStorage()
 }
 
 // Loops through manager object's project list and creates the buttons for all the projects in the manager obj's array
-// This change is much better, as now we can run this again when a new project is added
 function loadButtons() {
     let projectList = document.getElementById('projects');
     projectList.textContent = '';
     for (let i = 0; i < managerObj.projectList.length; i++) {
-        // console.log('mic check');
         const projButton = document.createElement('button');
         let projObj = managerObj.projectList[i];
         if (projObj.title.length >= 9) {
-            const shortTitle = projObj.title.slice(1,9)
+            const shortTitle = projObj.title.slice(1, 9)
             projButton.textContent = `${shortTitle}...`;
         } else {
             projButton.textContent = projObj.title;
@@ -640,13 +678,13 @@ function loadButtons() {
         projButton.id = projObj.title;
         projButton.addEventListener('click', function () { load(projButton.id) });
         projectList.appendChild(projButton);
-
     }
 }
 
 // Creating 1 function at the end to run the init functions so everything has a chance to instantiate before calling
 function appBoot() {
-    generalCreation()
+    createManager();
+    retrieveStorage();
     loadButtons();
     // Setting the app to init with the General project from the manager
     load(managerObj.getProject('General').title);

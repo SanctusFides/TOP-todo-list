@@ -343,6 +343,8 @@ button>svg {
     font-size: 1.4rem;
     padding: .7rem;
     border-radius: 8px;
+    border: 1px solid rgb(138, 136, 136);
+
 }
 
 .proj-button:hover {
