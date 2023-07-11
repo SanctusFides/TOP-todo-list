@@ -362,7 +362,7 @@ function loadToDos(id) {
         prioritySpan.textContent = '   ';
         titleSpan.textContent = title;
         if (notes.length >= 30) {
-            let shortenedNotes = notes.slice(1, 29);
+            let shortenedNotes = notes.slice(0, 29);
             shortenedNotes = `${shortenedNotes}...`;
             notesSpan.textContent = shortenedNotes;
         } else {
@@ -666,7 +666,7 @@ function loadButtons() {
         const projButton = document.createElement('button');
         let projObj = managerObj.projectList[i];
         if (projObj.title.length >= 9) {
-            const shortTitle = projObj.title.slice(1, 9)
+            const shortTitle = projObj.title.slice(0, 9)
             projButton.textContent = `${shortTitle}...`;
         } else {
             projButton.textContent = projObj.title;
