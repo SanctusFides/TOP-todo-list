@@ -188,7 +188,7 @@ function retrieveStorage() {
         // makes a new list to store the fully built projects that are created while looping through json
         let newProjectList = [];
         for (let i = 0; i < deserializedManager._projectList.length; i++) {
-            let projectData =deserializedManager._projectList[i];
+            let projectData = deserializedManager._projectList[i];
 
             // creates a new to-do list for the project by looping through them in the json
             let newToDoList = []
@@ -222,7 +222,7 @@ function updateStorage() {
 // array which is what is looked at to populate the tabs.
 function generalCreation() {
 
-    // BELOW IS JUST A TEST UNIT THAT I HAVE CREATED TO COPY/PASTE. THIS WILL BE REMOVED
+    // GENERAL PROJECT IS TO INIT THE APP WITH SOME PREPOPULATED DATA AND ELEMENTS TO USE
     let todo1 = new ToDo('Dishes', 'Medium', 'Do dishes');
     let todo2 = new ToDo('Laundry', 'Low', 'Do laundry');
     let todo3 = new ToDo('Trash', 'High', 'Takeout trash');
@@ -231,22 +231,19 @@ function generalCreation() {
     generalProj.addToDo(todo1);
     generalProj.addToDo(todo2);
     generalProj.addToDo(todo3);
-
-    // Test proj will be removed afterwards. This is only to have a second data set instantiated
-    const testProj = new Project('Test', 'and I helped!');
-    let test1 = new ToDo('TEST', 'Medium', 'test Med');
-    let test2 = new ToDo('Testing', 'Low', 'test Low');
-    let test3 = new ToDo('test', 'High', 'test High');
-    testProj.addToDo(test1);
-    testProj.addToDo(test2);
-    testProj.addToDo(test3);
-
-    // TEST MANAGER IS NOT NEEDED ANY LONGER - regular manager that lives global takes care of this - WILL REMOVE WHEN DONE
-    const testMng = new Manager();
-    testMng.addProject(generalProj);
-
     managerObj.addProject(generalProj);
-    managerObj.addProject(testProj);
+
+    // LEAVING THIS DATA IN CASE ITS EVER USEFUL TO TEST WITH A SECOND TEST FOR ARRAY PURPOSES
+    // const testProj = new Project('Test', 'and I helped!');
+    // let test1 = new ToDo('TEST', 'Medium', 'test Med');
+    // let test2 = new ToDo('Testing', 'Low', 'test Low');
+    // let test3 = new ToDo('test', 'High', 'test High');
+    // testProj.addToDo(test1);
+    // testProj.addToDo(test2);
+    // testProj.addToDo(test3);
+    // const testMng = new Manager();
+    // testMng.addProject(generalProj);
+    // managerObj.addProject(testProj);
 
     updateStorage();
 }
